@@ -1,0 +1,5 @@
+Window 800 600
+Font ./BaskervvilleSC-Regular.ttf 18 255 255 255
+Circle CGreen 100 100 -0.3 0.02 0 255 0 50
+Circle CBlue 200 200 0.02 0.04 0 0 255 0 255 75
+Rectangle RRed 200 200 0.1 0.15 255 0 0 50 25
