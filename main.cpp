@@ -6,16 +6,16 @@
 #include <memory>
 
 // centers the text on the shape
-void centerText(const sf::Shape &shape, sf::Text &text)
+void centerText(const std::shared_ptr<sf::Shape> shape, std::shared_ptr<sf::Text> text)
 {
-    float left_s = shape.getGlobalBounds().left;
-    float top_s = shape.getGlobalBounds().top;
-    float width_s = shape.getGlobalBounds().width;
-    float height_s = shape.getGlobalBounds().height;
-    float width_t = text.getGlobalBounds().width;
-    float height_t = text.getGlobalBounds().height;
+    float left_s = shape->getGlobalBounds().left;
+    float top_s = shape->getGlobalBounds().top;
+    float width_s = shape->getGlobalBounds().width;
+    float height_s = shape->getGlobalBounds().height;
+    float width_t = text->getGlobalBounds().width;
+    float height_t = text->getGlobalBounds().height;
 
-    text.setPosition(left_s + width_s/2 - width_t/2, top_s + height_s/2 - height_t/2);
+    text->setPosition(left_s + width_s/2 - width_t/2, top_s + height_s/2 - height_t/2);
 }
 
 int main(int argc, char* argv[]) 
@@ -31,6 +31,8 @@ int main(int argc, char* argv[])
         std::string dummy;
 
         config >> dummy >> windowWidth >> windowHeight;
+
+        std::cout << dummy << " " << windowWidth << " " << windowHeight << std::endl;
     }
     // read in font specs
     sf::Font font;
@@ -54,14 +56,16 @@ int main(int argc, char* argv[])
             std::cout << "Could not load font.\n";
             return 0;
         }
+
+        std::cout << dummy << " " << path << " " << fontSize << " " << r << " " << g << " " << b << std::endl;
     }
 
     // shape_0, shape_1, ...
-    std::vector<sf::Shape> shapes;
+    std::vector<std::shared_ptr<sf::Shape>> shapes;
     // sX_0, sY_0, sX_1, sY_1, ...
     std::vector<float> speeds;
     // text_0, text_1, ...
-    std::vector<sf::Text> texts;
+    std::vector<std::shared_ptr<sf::Text>> texts;
     {
         std::string type;
         while (config >> type) 
@@ -72,11 +76,13 @@ int main(int argc, char* argv[])
 
             config >> name >> posX >> posY >> sX >> sY >> R >> G >> B;
 
-            sf::Text thisText;
-            thisText.setFont(font);
-            thisText.setCharacterSize(fontSize);
-            thisText.setString(name);
-            thisText.setFillColor(fontColor);
+            std::cout << type << " " << name << " " << posX << " " << posY << " " << sX << " " << R << " " << G << " " << B << " ";
+
+            auto thisText = std::make_shared<sf::Text>();
+            thisText->setFont(font);
+            thisText->setCharacterSize(fontSize);
+            thisText->setString(name);
+            thisText->setFillColor(fontColor);
             
             texts.push_back(thisText);
             speeds.push_back(sX);
@@ -86,18 +92,20 @@ int main(int argc, char* argv[])
             {
                 float w, h;
                 config >> w >> h;
-                sf::RectangleShape rectangle(sf::Vector2f(w, h));
-                rectangle.setPosition(posX, posY);
-                rectangle.setFillColor(sf::Color(R, G, B));
+                std::cout << w << " " << h << std::endl;
+                auto rectangle = std::make_shared<sf::RectangleShape>(sf::Vector2f(w,h));
+                rectangle->setPosition(posX, posY);
+                rectangle->setFillColor(sf::Color(R, G, B));
                 shapes.push_back(rectangle);
             }
             else if (type == "Circle")
             {
                 float r;
                 config >> r;
-                sf::CircleShape circle(r);
-                circle.setPosition(posX,posY);
-                circle.setFillColor(sf::Color(R,G,B));
+                std::cout << r << std::endl;
+                auto circle = std::make_shared<sf::CircleShape>(r);
+                circle->setPosition(posX,posY);
+                circle->setFillColor(sf::Color(R,G,B));
                 shapes.push_back(circle);
             }
             else
@@ -108,10 +116,7 @@ int main(int argc, char* argv[])
         }
     }
 
-    // display shapes (no speed)
-    // windowRender
     sf::RenderWindow window(sf::VideoMode(windowWidth, windowHeight), "Assignment 1");
-    // main loop
     while (window.isOpen())
     {
         sf::Event event;
@@ -128,8 +133,8 @@ int main(int argc, char* argv[])
         // iterate through shapes
         for (int i = 0; i < shapes.size(); i++) {
             centerText(shapes[i], texts[i]);
-            window.draw(shapes[i]);
-            window.draw(texts[i]);
+            window.draw(*shapes[i]);
+            window.draw(*texts[i]);
         }
         window.display();
     }
