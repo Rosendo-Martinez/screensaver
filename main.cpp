@@ -116,10 +116,38 @@ int main(int argc, char* argv[])
             }
         }
 
+        for (int i = 0; i < shapes.size(); i++) 
+        {
+            // check if shape is touching/outside walls
+                // reverse speed
+
+                // shape is touching:
+                    // left wall
+                        // shape.left <= 0
+                    // right wall
+                    // top wall
+                    // bottom wall
+            float &sX = speeds[i*2];
+            float &sY = speeds[i*2 + 1];
+            sf::FloatRect rect = shapes[i]->getGlobalBounds();
+
+            if (rect.left <= 0 || rect.left + rect.width >= window.getSize().x)
+            {
+                sX *= -1;
+            }
+            if (rect.top <= 0 || rect.top + rect.height >= window.getSize().y)
+            {
+                sY *= -1;
+            }
+            
+            // move shape
+            shapes[i]->move(sf::Vector2f(sX,sY));
+        }
+
         window.clear();
         
-        // iterate through shapes
-        for (int i = 0; i < shapes.size(); i++) {
+        for (int i = 0; i < shapes.size(); i++) 
+        {
             centerText(shapes[i], texts[i]);
             window.draw(*shapes[i]);
             window.draw(*texts[i]);
