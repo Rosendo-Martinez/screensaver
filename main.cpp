@@ -8,14 +8,10 @@
 // centers the text on the shape
 void centerText(const std::shared_ptr<sf::Shape> shape, std::shared_ptr<sf::Text> text)
 {
-    float left_s = shape->getGlobalBounds().left;
-    float top_s = shape->getGlobalBounds().top;
-    float width_s = shape->getGlobalBounds().width;
-    float height_s = shape->getGlobalBounds().height;
-    float width_t = text->getGlobalBounds().width;
-    float height_t = text->getGlobalBounds().height;
-
-    text->setPosition(left_s + width_s/2 - width_t/2, top_s + height_s/2 - height_t/2);
+    sf::FloatRect textRect = text->getLocalBounds();
+    sf::FloatRect shapeRect = shape->getGlobalBounds();
+    text->setOrigin(sf::Vector2f(textRect.left + textRect.width/2, textRect.top + textRect.height/2));
+    text->setPosition(sf::Vector2f(shapeRect.left + shapeRect.width/2, shapeRect.top + shapeRect.height/2));
 }
 
 int main(int argc, char* argv[]) 
@@ -31,8 +27,6 @@ int main(int argc, char* argv[])
         std::string dummy;
 
         config >> dummy >> windowWidth >> windowHeight;
-
-        std::cout << dummy << " " << windowWidth << " " << windowHeight << std::endl;
     }
     // read in font specs
     sf::Font font;
@@ -56,8 +50,6 @@ int main(int argc, char* argv[])
             std::cout << "Could not load font.\n";
             return 0;
         }
-
-        std::cout << dummy << " " << path << " " << fontSize << " " << r << " " << g << " " << b << std::endl;
     }
 
     // shape_0, shape_1, ...
@@ -76,8 +68,6 @@ int main(int argc, char* argv[])
 
             config >> name >> posX >> posY >> sX >> sY >> R >> G >> B;
 
-            std::cout << type << " " << name << " " << posX << " " << posY << " " << sX << " " << R << " " << G << " " << B << " ";
-
             auto thisText = std::make_shared<sf::Text>();
             thisText->setFont(font);
             thisText->setCharacterSize(fontSize);
@@ -92,7 +82,6 @@ int main(int argc, char* argv[])
             {
                 float w, h;
                 config >> w >> h;
-                std::cout << w << " " << h << std::endl;
                 auto rectangle = std::make_shared<sf::RectangleShape>(sf::Vector2f(w,h));
                 rectangle->setPosition(posX, posY);
                 rectangle->setFillColor(sf::Color(R, G, B));
@@ -102,7 +91,6 @@ int main(int argc, char* argv[])
             {
                 float r;
                 config >> r;
-                std::cout << r << std::endl;
                 auto circle = std::make_shared<sf::CircleShape>(r);
                 circle->setPosition(posX,posY);
                 circle->setFillColor(sf::Color(R,G,B));
