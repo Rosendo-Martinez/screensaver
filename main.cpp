@@ -5,7 +5,6 @@
 #include <vector>
 #include <memory>
 
-// centers the text on the shape
 void centerText(const std::shared_ptr<sf::Shape> shape, std::shared_ptr<sf::Text> text)
 {
     sf::FloatRect textRect = text->getLocalBounds();
@@ -19,7 +18,6 @@ int main(int argc, char* argv[])
     // open spec file
     std::ifstream config("./config.txt", std::ifstream::in);
 
-
     // read in window specs
     int windowWidth;
     int windowHeight;
@@ -28,6 +26,7 @@ int main(int argc, char* argv[])
 
         config >> dummy >> windowWidth >> windowHeight;
     }
+
     // read in font specs
     sf::Font font;
     int fontSize;
@@ -52,6 +51,7 @@ int main(int argc, char* argv[])
         }
     }
 
+    // read in shapes specs
     // shape_0, shape_1, ...
     std::vector<std::shared_ptr<sf::Shape>> shapes;
     // sX_0, sY_0, sX_1, sY_1, ...
@@ -116,17 +116,9 @@ int main(int argc, char* argv[])
             }
         }
 
+        // move shapes
         for (int i = 0; i < shapes.size(); i++) 
         {
-            // check if shape is touching/outside walls
-                // reverse speed
-
-                // shape is touching:
-                    // left wall
-                        // shape.left <= 0
-                    // right wall
-                    // top wall
-                    // bottom wall
             float &sX = speeds[i*2];
             float &sY = speeds[i*2 + 1];
             sf::FloatRect rect = shapes[i]->getGlobalBounds();
@@ -140,12 +132,11 @@ int main(int argc, char* argv[])
                 sY *= -1;
             }
             
-            // move shape
             shapes[i]->move(sf::Vector2f(sX,sY));
         }
 
+        // draw shapes
         window.clear();
-        
         for (int i = 0; i < shapes.size(); i++) 
         {
             centerText(shapes[i], texts[i]);
